@@ -40,13 +40,21 @@
 			text-shadow: 0 1px 1px #333;
 		}
 
-		#header p {
+		#header .controls {
 			display: inline-block;
 			padding: 0.5em 2em;
 			border-radius: 0.5em;
 			color: #333;
 			background-color: rgba(0,0,0,0.75);
 			box-shadow: 0 1px 1px #333;
+		}
+
+		#search {
+			font: normal normal normal 16px/1.5 Helvetica, sans-serif;
+		}
+
+		table {
+			width: 100%;
 		}
 
 		td {
@@ -161,7 +169,7 @@
 				font-size: 48px;
 			}
 
-			#header p {
+			#header .controls {
 				padding: 0.5em 0;
 				min-width: 300px;
 			}
@@ -199,6 +207,24 @@
 			$('#lightbox').html(info);
 			lightbox.show();
 		});
+
+		// http://css-tricks.com/snippets/jquery/make-jquery-contains-case-insensitive/
+		$.expr[":"].contains = $.expr.createPseudo(function(arg) {
+		    return function( elem ) {
+		        return $(elem).text().toUpperCase().indexOf(arg.toUpperCase()) >= 0;
+		    };
+		});
+
+		$('#search').on('keyup', function(){
+			var str = $(this).val().toLowerCase();
+
+			if (str == '') {
+				$('.medium').css('display', 'inline-block');
+			} else {
+				$('.medium').hide();
+				$('.title:contains('+ str +')').closest('.medium').css('display', 'inline-block');
+			}
+		});
 	});
 	</script>
 </head>
@@ -206,7 +232,10 @@
 <body>
 <div id="header">
 	<h1>Ex Libris Junap</h1>
-	<p>$totalItems - <time>$publishDate</time> - $shelfNavigationPopup</p>
+	<div class="controls">
+		<p>$totalItems - <time>$publishDate</time></p>
+		<p><label>Filter: <input type="search" results="5" name="search" value="" id="search" /></label> $shelfNavigationPopup</p>
+	</div>
 </div>
 
 <table>
@@ -224,6 +253,7 @@
 
 			<div class="description">
 				<p>$primaryDescriptionString</p>
+				$notes
 			</div>
 
 			<div class="outro">
